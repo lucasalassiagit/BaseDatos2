@@ -1,0 +1,111 @@
+CREATE TABLE Rol (
+    IdRol INT PRIMARY KEY,
+    Nombre NVARCHAR(100),
+    Descripcion NVARCHAR(255),
+    Estado BIT
+);
+
+CREATE TABLE Usuario (
+    IdUsuario INT PRIMARY KEY,
+    IdRol INT FOREIGN KEY REFERENCES Rol(IdRol),
+    Nombre NVARCHAR(100),
+    TipoDocumento NVARCHAR(20),
+    NumDocumento NVARCHAR(20),
+    Direccion NVARCHAR(200),
+    Telefono NVARCHAR(20),
+    Email NVARCHAR(100),
+    Password NVARCHAR(100),
+    Estado BIT
+);
+
+CREATE TABLE Proveedor (
+    Cuit NVARCHAR(20) PRIMARY KEY,
+    Nombre NVARCHAR(100),
+    RazonSocial NVARCHAR(100),
+    TipoDocumento NVARCHAR(20),
+    NroDocumento NVARCHAR(20),
+    Direccion NVARCHAR(200),
+    Telefono NVARCHAR(20),
+    CorreoElectronico NVARCHAR(100)
+);
+
+CREATE TABLE Cliente (
+    Cuit NVARCHAR(20) PRIMARY KEY,
+    Nombre NVARCHAR(100),
+    TipoDocumento NVARCHAR(20),
+    NroDocumento NVARCHAR(20),
+    Direccion NVARCHAR(200),
+    Telefono NVARCHAR(20),
+    CorreoElectronico NVARCHAR(100),
+    TipoCliente NVARCHAR(50)
+);
+
+CREATE TABLE Categoria (
+    IdCategoria INT PRIMARY KEY,
+    Nombre NVARCHAR(100),
+    Descripcion NVARCHAR(255),
+    Estado BIT
+);
+
+CREATE TABLE Articulo (
+    IdArticulo INT PRIMARY KEY,
+    IdCategoria INT FOREIGN KEY REFERENCES Categoria(IdCategoria),
+    Codigo NVARCHAR(50),
+    Nombre NVARCHAR(100),
+    PrecioVenta DECIMAL(18, 2),
+    Stock INT,
+    Descripcion NVARCHAR(255),
+    Estado BIT
+);
+
+CREATE TABLE DetalleIngreso (
+    IdDetalleIngreso INT PRIMARY KEY,
+    IdArticulo INT FOREIGN KEY REFERENCES Articulo(IdArticulo),
+    Cantidad INT,
+    Precio DECIMAL(18, 2)
+);
+
+CREATE TABLE Ingreso (
+    IdIngreso INT PRIMARY KEY,
+    CuitProveedor NVARCHAR(20) FOREIGN KEY REFERENCES Proveedor(Cuit),
+    IdUsuario INT FOREIGN KEY REFERENCES Usuario(IdUsuario),
+    NumComprobante NVARCHAR(50),
+    IdDetalleIngreso INT FOREIGN KEY REFERENCES DetalleIngreso(IdDetalleIngreso)
+);
+
+CREATE TABLE DetalleVenta (
+    IdDetalleVenta INT PRIMARY KEY,
+    IdArticulo INT FOREIGN KEY REFERENCES Articulo(IdArticulo),
+    Cantidad INT,
+    Precio DECIMAL(18, 2),
+    Descuento DECIMAL(18, 2)
+);
+
+CREATE TABLE Comprobante (
+    NumComprobante NVARCHAR(50) PRIMARY KEY,
+    SerieComprobante NVARCHAR(20),
+    TipoComprobante NVARCHAR(50),
+    Fecha DATETIME,
+    Total DECIMAL(18, 2),
+    Estado BIT,
+    Id INT
+);
+
+CREATE TABLE Venta (
+    IdVenta INT PRIMARY KEY,
+    CuitCliente NVARCHAR(20) FOREIGN KEY REFERENCES Cliente(Cuit),
+    NumComprobante NVARCHAR(50) FOREIGN KEY REFERENCES Comprobante(NumComprobante),
+    IdDetalleVenta INT FOREIGN KEY REFERENCES DetalleVenta(IdDetalleVenta),
+    IdUsuario INT FOREIGN KEY REFERENCES Usuario(IdUsuario)
+);
+
+CREATE TABLE Impuesto (
+    NumImpuesto INT PRIMARY KEY,
+    TipoImpuesto NVARCHAR(50)
+);
+
+CREATE TABLE ComprobanteImpuesto (
+    Id INT PRIMARY KEY,
+    NumImpuesto INT FOREIGN KEY REFERENCES Impuesto(NumImpuesto),
+    Monto DECIMAL(18, 2)
+);
